@@ -74,7 +74,7 @@ int main() {
     bg::date dd =
         bg::from_undelimited_string(root.get<std::string>("lastFullDate"));
     bg::date cur = bg::day_clock::local_day();
-    bg::date_duration backupPeriod(3);
+    bg::date_duration backupPeriod(7);
     bool isFull = false;
     if (dd + backupPeriod < cur) isFull = true;
     if (root.get<uint64_t>("lastFullSize") <
