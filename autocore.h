@@ -10,9 +10,6 @@
 #include <string>
 #include <vector>
 
-namespace bp = boost::process;
-namespace bg = boost::gregorian;
-
 struct autocore {
   std::string targetDir;
   std::string sourceDir;
@@ -21,10 +18,12 @@ struct autocore {
   std::string backend;
   std::string passphrase;
   std::string signPassphrase;
-  boost::filesystem::path p;
+  boost::filesystem::path p_duplicity;
 
-  bg::date lastFullDate();
-  uint64_t performBackup(bool &isFull);
+  boost::gregorian::date lastFullDate() const;
+
+  uint64_t performBackup(const bool &isFull) const;
+
   autocore()
       : targetDir(""),
         sourceDir(""),
@@ -33,9 +32,20 @@ struct autocore {
         backend(""),
         passphrase(""),
         signPassphrase(""),
-        p("/") {}
-  autocore(std::string, std::string, std::string, std::string, std::string,
-           std::string, std::string, boost::filesystem::path);
+        p_duplicity("/") {}
+
+  autocore(std::string _targetDir, std::string _sourceDir,
+           std::string _encryptKey, std::string _signKey, std::string _backend,
+           std::string _passphrase, std::string _signPassphrase,
+           boost::filesystem::path _p_duplicity)
+      : targetDir(_targetDir),
+        sourceDir(_sourceDir),
+        encryptKey(_encryptKey),
+        signKey(_signKey),
+        backend(_backend),
+        passphrase(_passphrase),
+        signPassphrase(_signPassphrase),
+        p_duplicity(_p_duplicity) {}
 };
 
 #endif  // AUTOCORE_H

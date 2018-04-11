@@ -1,23 +1,14 @@
 #include "autocore.h"
 
-autocore::autocore(std::string s1, std::string s2, std::string s3,
-                   std::string s4, std::string s5, std::string s6,
-                   std::string s7, boost::filesystem::path p1) {
-  targetDir = s1;
-  sourceDir = s2;
-  encryptKey = s3;
-  signKey = s4;
-  backend = s5;
-  passphrase = s6;
-  signPassphrase = s7;
-  p = p1;
-}
+namespace bp = boost::process;
+namespace bg = boost::gregorian;
 
-bg::date autocore::lastFullDate() {
+boost::gregorian::date autocore::lastFullDate() const {
   bp::ipstream is;
-  bp::child c(p, "collection-status", backend + targetDir,
+  bp::child c(p_duplicity, "collection-status", backend + targetDir,
               boost::process::std_out > is);
   c.wait();
+
   std::string line;
   bg::date res(bg::min_date_time);
   while (is && std::getline(is, line)) {
@@ -34,23 +25,26 @@ bg::date autocore::lastFullDate() {
       break;
     }
   }
+
   return res;
 }
 
-uint64_t autocore::performBackup(bool &isFull) {
+uint64_t autocore::performBackup(const bool &isFull) const {
   std::string argv;
   if (isFull)
     argv = "full";
   else
     argv = "incr";
+
   bp::ipstream is;
   uint64_t res;
-  bp::child c1(p, argv, "--encrypt-key", encryptKey, "--sign-key", signKey,
-               "--gpg-options", "--cipher-algo=AES256",
+  bp::child c1(p_duplicity, argv, "--encrypt-key", encryptKey, "--sign-key",
+               signKey, "--gpg-options", "--cipher-algo=AES256",
                "--allow-source-mismatch", sourceDir, backend + targetDir,
                boost::process::std_out > is, bp::env["PASSPHRASE"] = passphrase,
                bp::env["SIGN_PASSPHRASE"] = signPassphrase);
   c1.wait();
+
   std::string line;
   while (is && std::getline(is, line)) {
     if (line.empty()) continue;
@@ -66,14 +60,17 @@ uint64_t autocore::performBackup(bool &isFull) {
       break;
     }
   }
-  bp::child c2(p, "cleanup", "--force", backend + targetDir,
+
+  bp::child c2(p_duplicity, "cleanup", "--force", backend + targetDir,
                bp::env["PASSPHRASE"] = passphrase,
                bp::env["SIGN_PASSPHRASE"] = signPassphrase);
   c2.wait();
+
   if (argv == "full") {
-    bp::child c3(p, "remove-all-but-n-full", "1", "--force",
+    bp::child c3(p_duplicity, "remove-all-but-n-full", "1", "--force",
                  backend + targetDir);
     c3.wait();
   }
+
   return res;
 }
