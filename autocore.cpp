@@ -3,10 +3,10 @@
 namespace bp = boost::process;
 namespace bg = boost::gregorian;
 
-boost::gregorian::date autocore::lastFullDate() const {
+bg::date autocore::lastFullDate() const {
   bp::ipstream is;
   bp::child c(p_duplicity, "collection-status", backend + targetDir,
-              boost::process::std_out > is);
+              bp::std_out > is);
   c.wait();
 
   std::string line;
@@ -41,7 +41,7 @@ uint64_t autocore::performBackup(const bool &isFull) const {
   bp::child c1(p_duplicity, argv, "--encrypt-key", encryptKey, "--sign-key",
                signKey, "--gpg-options", "--cipher-algo=AES256",
                "--allow-source-mismatch", sourceDir, backend + targetDir,
-               boost::process::std_out > is, bp::env["PASSPHRASE"] = passphrase,
+               bp::std_out > is, bp::env["PASSPHRASE"] = passphrase,
                bp::env["SIGN_PASSPHRASE"] = signPassphrase);
   c1.wait();
 
@@ -62,13 +62,13 @@ uint64_t autocore::performBackup(const bool &isFull) const {
   }
 
   bp::child c2(p_duplicity, "cleanup", "--force", backend + targetDir,
-               bp::env["PASSPHRASE"] = passphrase,
+               bp::std_out > bp::null, bp::env["PASSPHRASE"] = passphrase,
                bp::env["SIGN_PASSPHRASE"] = signPassphrase);
   c2.wait();
 
   if (argv == "full") {
     bp::child c3(p_duplicity, "remove-all-but-n-full", "1", "--force",
-                 backend + targetDir);
+                 backend + targetDir, bp::std_out > bp::null);
     c3.wait();
   }
 
