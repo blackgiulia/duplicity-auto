@@ -1,6 +1,8 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
+#include <utility>
+
 #include "autocore.h"
 
 namespace bf = boost::filesystem;
@@ -8,8 +10,11 @@ namespace bg = boost::gregorian;
 namespace bp = boost::process;
 namespace pt = boost::property_tree;
 
+autocore get_obj();
+std::pair<std::string, std::string> get_keys();
+
 autocore get_obj() {
-  bf::path p_duplicity = bp::search_path("duplicity");
+  auto p_duplicity = bp::search_path("duplicity");
   std::string targetDir;
   std::string sourceDir;
   std::string encryptKey;
@@ -18,7 +23,17 @@ autocore get_obj() {
   std::string passphrase;
   std::string signPassphrase;
 
-  std::cout << "Which directory to backup:" << std::endl;
+  auto keys = get_keys();
+  encryptKey = keys.first;
+  signKey = keys.second;
+
+  std::cout << "\nPassphrase for encrypt key:" << std::endl;
+  std::cin >> passphrase;
+
+  std::cout << "\nPassphrase for sign key:" << std::endl;
+  std::cin >> signPassphrase;
+
+  std::cout << "\nWhich directory to backup:" << std::endl;
   std::cin >> sourceDir;
   while (!(bf::is_directory(sourceDir))) {
     std::cout << sourceDir
@@ -34,22 +49,50 @@ autocore get_obj() {
     targetDir = targetDir.substr(1);
   }
 
-  std::cout << "\nGPG encrypt key id:" << std::endl;
-  std::cin >> encryptKey;
-
-  std::cout << "\nGPG sign key id:" << std::endl;
-  std::cin >> signKey;
-
-  std::cout << "\nPassphrase for encrypt key:" << std::endl;
-  std::cin >> passphrase;
-
-  std::cout << "\nPassphrase for sign key:" << std::endl;
-  std::cin >> signPassphrase;
-
   autocore d(targetDir, sourceDir, encryptKey, signKey, backend, passphrase,
              signPassphrase, p_duplicity);
 
   return d;
+}
+
+std::pair<std::string, std::string> get_keys() {
+  auto p_gpg = bp::search_path("gpg");
+  bp::ipstream is;
+  bp::child c1(p_gpg, "--list-keys", bp::std_out > is);
+  c1.wait();
+
+  std::vector<std::string> keys;
+  int idx = 1;
+  std::string line;
+
+  while (is && std::getline(is, line)) {
+    if (line.empty()) continue;
+    std::vector<std::string> tokens;
+    std::stringstream ss(line);
+    std::string s;
+    while (getline(ss, s, ' ')) {
+      tokens.push_back(s);
+    }
+    if (tokens.size() == 7) keys.push_back(tokens[6]);
+    if (tokens[0] == "pub") {
+      std::cout << "(" << idx++ << ") " << line << std::endl;
+    } else {
+      std::cout << "    " << line << std::endl;
+    }
+    if (tokens[0] == "sub") std::cout << std::endl;
+  }
+
+  std::cout << "Select keys for encryption. Type number. ";
+  std::cin >> idx;
+
+  std::string encrypt_key = keys[idx - 1];
+
+  std::cout << "\nSelect keys for signing. Type number. ";
+  std::cin >> idx;
+
+  std::string sign_key = keys[idx - 1];
+
+  return std::make_pair(encrypt_key, sign_key);
 }
 
 int main() {
@@ -65,7 +108,7 @@ int main() {
     file.open(config_path, bf::ifstream::in);
     pt::read_json(file, root);
     file.close();
-    std::cout << "config.json is detected, reload successfully..." << std::endl;
+    std::cout << "config.json is detected, reload successfully." << std::endl;
   }
 
   if (!config) {

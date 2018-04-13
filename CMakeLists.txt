@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_BUILD_TYPE Release)
 
-find_package(Boost 1.66.0 REQUIRED COMPONENTS filesystem system date_time)
+find_package(Boost REQUIRED COMPONENTS filesystem date_time)
 
 if(Boost_FOUND)
 

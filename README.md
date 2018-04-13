@@ -2,7 +2,7 @@
 
 ## Intro
 
-Duplicity-auto is a small console application written in C++ used by myself for simplify duplicity backup to Google Drive. The application itself doesn't include **duplicity** and **pydrive** so make sure these two applications are already installed. You can check this [post](https://redplus.me/post/using-duplicity-with-google-drive-for-backup-on-macos/) for how to install the two applications.
+Duplicity-auto is a small console application written in C++ used by myself for simplify duplicity backup to Google Drive. The application itself doesn't include **duplicity**, **pydrive** and **GPG** so make sure these two applications are already installed. You can check this [post](https://redplus.me/post/using-duplicity-with-google-drive-for-backup-on-macos/) for how to install the two applications.
 
 On the first run, it will ask for input:
 
