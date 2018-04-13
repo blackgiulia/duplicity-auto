@@ -2,7 +2,7 @@
 
 ## Intro
 
-Duplicity-auto is a small console application written in C++ used by myself for simplify duplicity backup to Google Drive. The application itself doesn't include **duplicity**, **pydrive** and **GPG** so make sure these two applications are already installed. You can check this [post](https://redplus.me/post/using-duplicity-with-google-drive-for-backup-on-macos/) for how to install the two applications.
+Duplicity-auto is a small console application written in C++ used by myself for simplify duplicity backup to Google Drive. The application itself doesn't include **duplicity**, **pydrive** and **GPG** so make sure these applications are already installed. You can check this [post](https://redplus.me/post/using-duplicity-with-google-drive-for-backup-on-macos/) for how to install the two applications.
 
 On the first run, it will ask for input:
 
@@ -13,14 +13,14 @@ On the first run, it will ask for input:
 * passphrase (passphrase of encryption key)
 * signPassphrase (passphrase of signing key)
 
-The program will store above information to a **config.json** file in the current working directory for later use so you don't need to input once again. Because the information is stored in plain text without encryption, you may **NOT** want to use your current gpg keys for encryption and signing.
+The program will store above information to a **du_config.json** file in the current working directory for later use so you don't need to input once again. Because the information is stored in plain text without encryption, you may **NOT** want to use your current gpg keys for encryption and signing.
 
 Whether to perform a full back or a incremental backup depends on following:
 
 * If the total size of incremental backup files since last full backup is larger than half of the size of last full backup, a full backup will be performed.
 * If the date of last full backup is 7 days before current date, a full backup will be performed.
 
-Whenever a full backup is performed, all backup files before this full backup will be deleted.
+Whenever a full backup is performed, all backup files before this full backup will be deleted. And I recommend to execute this application in the directory you want to backup so you can have each directory with a corresponding du_config.json file.
 
 The program is only tested on macOS 10.13.4 with Apple LLVM version 9.1.0 (clang-902.0.39.2) and depends on Boost libraries only. It should work on WINDOWS as well.
 

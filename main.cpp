@@ -100,7 +100,7 @@ int main() {
   bool config = false;
 
   auto config_path = bf::current_path();
-  config_path += bf::path("/config.json");
+  config_path += bf::path("/du_config.json");
 
   if (bf::exists(config_path)) {
     config = true;
