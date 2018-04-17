@@ -4,9 +4,7 @@ project(DuplicityAuto)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(CMAKE_BUILD_TYPE Release)
-
-find_package(Boost REQUIRED COMPONENTS filesystem date_time)
+find_package(Boost REQUIRED COMPONENTS filesystem date_time system)
 
 if(Boost_FOUND)
 
@@ -18,10 +16,29 @@ if(Boost_FOUND)
 
 endif()
 
-add_executable(${PROJECT_NAME} "main.cpp" "autocore.cpp")
+set(LLVM_DIR "/usr/local/opt/llvm/lib/cmake/llvm")
 
-if(Boost_FOUND)
+find_package(LLVM REQUIRED CONFIG)
 
-    target_link_libraries(DuplicityAuto ${Boost_LIBRARIES})
+if(LLVM_FOUND)
+
+    message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+    message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
+    include_directories(${LLVM_INCLUDE_DIRS})
+    add_definitions(${LLVM_DEFINITIONS})
 
 endif()
+
+
+add_executable(${PROJECT_NAME} "main.cpp" "autocore.cpp" "autocore.h")
+
+if(Boost_FOUND AND LLVM_FOUND)
+
+    llvm_map_components_to_libnames(llvm_libs support core irreader)
+    target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} ${llvm_libs})
+
+endif()
+
+set(DO_CLANG_TIDY "/usr/local/opt/llvm/bin/clang-tidy" "-header-filter=.*" "-checks=*,-clang-analyzer-alpha.*,-android-*,-fuchsia-*,-google-*,-llvm-*,-objc-*,-zircon-*,-hicpp-*")
+set_target_properties(${PROJECT_NAME} PROPERTIES CXX_CLANG_TIDY  "${DO_CLANG_TIDY}")

@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 struct autocore {
@@ -39,14 +40,14 @@ struct autocore {
            std::string _encryptKey, std::string _signKey, std::string _backend,
            std::string _passphrase, std::string _signPassphrase,
            boost::filesystem::path _p_duplicity)
-      : targetDir(_targetDir),
-        sourceDir(_sourceDir),
-        encryptKey(_encryptKey),
-        signKey(_signKey),
-        backend(_backend),
-        passphrase(_passphrase),
-        signPassphrase(_signPassphrase),
-        p_duplicity(_p_duplicity) {}
+      : targetDir(std::move(_targetDir)),
+        sourceDir(std::move(_sourceDir)),
+        encryptKey(std::move(_encryptKey)),
+        signKey(std::move(_signKey)),
+        backend(std::move(_backend)),
+        passphrase(std::move(_passphrase)),
+        signPassphrase(std::move(_signPassphrase)),
+        p_duplicity(std::move(_p_duplicity)) {}
 };
 
 #endif  // AUTOCORE_H

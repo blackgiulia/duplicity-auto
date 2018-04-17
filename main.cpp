@@ -1,8 +1,6 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
-#include <utility>
-
 #include "autocore.h"
 
 namespace bf = boost::filesystem;
@@ -66,20 +64,26 @@ std::pair<std::string, std::string> get_keys() {
   std::string line;
 
   while (is && std::getline(is, line)) {
-    if (line.empty()) continue;
+    if (line.empty()) {
+      continue;
+    }
     std::vector<std::string> tokens;
     std::stringstream ss(line);
     std::string s;
     while (getline(ss, s, ' ')) {
       tokens.push_back(s);
     }
-    if (tokens.size() == 7) keys.push_back(tokens[6]);
+    if (tokens.size() == 7) {
+      keys.push_back(tokens[6]);
+    }
     if (tokens[0] == "pub") {
       std::cout << "(" << idx++ << ") " << line << std::endl;
     } else {
       std::cout << "    " << line << std::endl;
     }
-    if (tokens[0] == "sub") std::cout << std::endl;
+    if (tokens[0] == "sub") {
+      std::cout << std::endl;
+    }
   }
 
   std::cout << "Select keys for encryption. Type number. ";
@@ -108,7 +112,8 @@ int main() {
     file.open(config_path, bf::ifstream::in);
     pt::read_json(file, root);
     file.close();
-    std::cout << "config.json is detected, reload successfully." << std::endl;
+    std::cout << "du_config.json is detected, reload successfully."
+              << std::endl;
   }
 
   if (!config) {
@@ -178,7 +183,7 @@ int main() {
 
       root.put("lastIncrDate", bg::to_iso_string(cur));
 
-      uint64_t last_incr_size = root.get<uint64_t>("totalIncrSize");
+      auto last_incr_size = root.get<uint64_t>("totalIncrSize");
       root.put("totalIncrSize", sz + last_incr_size);
     }
 

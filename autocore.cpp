@@ -12,7 +12,9 @@ bg::date autocore::lastFullDate() const {
   std::string line;
   bg::date res(bg::min_date_time);
   while (is && std::getline(is, line)) {
-    if (line.empty()) continue;
+    if (line.empty()) {
+      continue;
+    }
     std::vector<std::string> tokens;
     std::stringstream ss(line);
     std::string s;
@@ -31,13 +33,14 @@ bg::date autocore::lastFullDate() const {
 
 uint64_t autocore::performBackup(const bool &isFull) const {
   std::string argv;
-  if (isFull)
+  if (isFull) {
     argv = "full";
-  else
+  } else {
     argv = "incr";
+  }
 
   bp::ipstream is;
-  uint64_t res;
+  uint64_t res = 0;
   bp::child c1(p_duplicity, argv, "--encrypt-key", encryptKey, "--sign-key",
                signKey, "--gpg-options", "--cipher-algo=AES256",
                "--allow-source-mismatch", sourceDir, backend + targetDir,
@@ -47,7 +50,9 @@ uint64_t autocore::performBackup(const bool &isFull) const {
 
   std::string line;
   while (is && std::getline(is, line)) {
-    if (line.empty()) continue;
+    if (line.empty()) {
+      continue;
+    }
     std::vector<std::string> tokens;
     std::stringstream ss(line);
     std::string s;

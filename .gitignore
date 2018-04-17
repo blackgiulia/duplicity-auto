@@ -1,4 +1,6 @@
 .DS_Store
 .localized
+.vscode/
+build/
 CMakeLists.txt.user
 catch.hpp
