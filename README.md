@@ -22,7 +22,7 @@ Whether to perform a full back or a incremental backup depends on following:
 
 Whenever a full backup is performed, all backup files before this full backup will be deleted. And I recommend to execute this application in the directory you want to backup so you can have each directory with a corresponding du_config.json file.
 
-The program is only tested on macOS 10.13.4 with Apple LLVM version 9.1.0 (clang-902.0.39.2) and depends on Boost libraries only. It should work on WINDOWS as well.
+This program is only tested on macOS 10.13.4 with LLVM 6.0 and depends on Boost libraries only. It should work on WINDOWS as well.
 
 ## License
 
