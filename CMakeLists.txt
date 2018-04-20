@@ -1,5 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
-
+cmake_minimum_required(VERSION 3.10)
 project(DuplicityAuto)
 
 set(CMAKE_CXX_STANDARD 14)
@@ -30,8 +29,7 @@ if(LLVM_FOUND)
 
 endif()
 
-
-add_executable(${PROJECT_NAME} "main.cpp" "autocore.cpp" "autocore.h")
+add_executable(${PROJECT_NAME} main.cpp handle.cpp handle.hpp)
 
 if(Boost_FOUND AND LLVM_FOUND)
 
