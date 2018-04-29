@@ -24,7 +24,7 @@ Whenever a full backup is performed, all backup files before this full backup wi
 
 This program is only tested on macOS 10.13.4 with LLVM 6.0 and Boost 1.67, and depends on Boost libraries only. It should work on WINDOWS as well.
 
-## TODO: add a widget UI
+## UI version is [Duplicity-UI](https://github.com/blackgiulia/Duplicity-UI)
 
 ## License
 
